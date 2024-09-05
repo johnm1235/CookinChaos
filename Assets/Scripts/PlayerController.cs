@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
     public float verticalInput;
     private CharacterController controller;
 
-
     public void Start()
     {
         player = GameObject.Find("Player");
@@ -28,6 +27,5 @@ public class PlayerController : MonoBehaviour
         verticalInput = Input.GetAxis("Vertical");
         Vector3 move = new Vector3(horizontalInput, 0, verticalInput);
         controller.Move(move * speed * Time.deltaTime);
-
     }
 }
