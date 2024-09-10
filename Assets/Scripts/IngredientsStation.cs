@@ -8,10 +8,8 @@ public class IngredientsStation : Station
 
     protected override void InteractWithStation()
     {
-        if (PlayerInventory.Instance.currentItem == null)
-        {
             Item newItem = Instantiate(foodItemPrefab, transform.position, Quaternion.identity);
             PlayerInventory.Instance.PickUpItem(newItem);
-        }
+
     }
 }

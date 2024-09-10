@@ -21,12 +21,14 @@ public class ServiceStation : Station
                 PositionOnTable();
 
                 IngredientDisponible = true;
-                PlayerInventory.Instance.RemoveItem(); 
+                PlayerInventory.Instance.RemoveItem();
 
-                StartCoroutine(enumerator());
+                Destroy(ingredient.gameObject);
+
             }
+            IngredientDisponible = false;
 
-            Destroy(ingredient.gameObject);
+             
         }
         else
         {

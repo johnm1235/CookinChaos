@@ -30,12 +30,13 @@ public class CuttingStation : Station
     {
         yield return new WaitForSeconds(3);
 
-        cuttingItem.itemState = ItemState.Cut;
-        cuttingItem.gameObject.transform.position = transform.position; 
-        cuttingItem.gameObject.SetActive(true); 
-        PlayerInventory.Instance.RemoveItem(); 
-        PlayerInventory.Instance.inventoryImage.sprite = cuttingItem.cutIcon;
+        // Cambiar el estado del ítem a cortado
+        cuttingItem.ChangeState(ItemState.Cut);
 
+        cuttingItem.gameObject.transform.position = transform.position;
+        cuttingItem.gameObject.SetActive(true);
+        PlayerInventory.Instance.RemoveItem();
         Debug.Log("Item cut and placed on Cutting Station.");
     }
+
 }

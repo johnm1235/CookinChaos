@@ -5,7 +5,12 @@ using UnityEngine;
 public abstract class Station : MonoBehaviour
 {
     protected bool isPlayerNearby = false;
-    public GameObject interactionUI;
+    private Color originalColor;
+
+    private void Start()
+    {
+        originalColor = this.GetComponent<Renderer>().material.color;
+    }
 
     protected void Update()
     {
@@ -24,7 +29,7 @@ public abstract class Station : MonoBehaviour
         {
             isPlayerNearby = true;
 
-            interactionUI.SetActive(true);
+            SelectedObject();
 
         }
     }
@@ -35,8 +40,21 @@ public abstract class Station : MonoBehaviour
         {
             isPlayerNearby = false;
 
-            interactionUI.SetActive(false);
+
+            DeselectedObject();
 
         }
     }
+
+    private void SelectedObject()
+    {
+        this.GetComponent<Renderer>().material.color = Color.red;
+    }
+
+    private void DeselectedObject()
+    {
+        this.GetComponent<Renderer>().material.color =originalColor;
+    }
+
+
 }

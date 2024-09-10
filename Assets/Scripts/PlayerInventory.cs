@@ -7,13 +7,9 @@ public class PlayerInventory : MonoBehaviour
 {
     public static PlayerInventory Instance;
     public Item currentItem;
-    public Image inventoryImage;
-
-    // Transform de la mano del personaje donde se colocará el ítem
+    public Plate currentPlate; // Referencia al plato que tiene el jugador, si tiene uno.
+  //  public Image inventoryImage;
     public Transform handPosition;
-
-    // Variable para saber si el jugador tiene algo en la mano
-    private bool isHoldingItem = false;
 
     private void Awake()
     {
@@ -30,10 +26,14 @@ public class PlayerInventory : MonoBehaviour
     public void PickUpItem(Item item)
     {
         currentItem = item;
-        isHoldingItem = true;
-        PositionInHand(); 
-        UpdateInventoryImage();
+        PositionInHand();
+    }
 
+    public void PickUpItem(Plate plate)
+    {
+        currentPlate = plate;
+        currentPlate.PickUpPlate();
+        PositionInHand();
     }
 
     public void RemoveItem()
@@ -42,45 +42,37 @@ public class PlayerInventory : MonoBehaviour
         {
             currentItem.transform.SetParent(null);
             currentItem = null;
-            inventoryImage.sprite = null; 
-            isHoldingItem = false;
+        //    inventoryImage.sprite = null;
         }
+        if (currentPlate != null)
+        {
+            currentPlate.RemovePlate();
+            currentPlate = null;
+        }
+    }
+
+
+    public bool HasPlate()
+    {
+        return currentPlate != null && currentPlate.hasPlate;
     }
 
     private void PositionInHand()
     {
-        currentItem.gameObject.SetActive(true); 
         if (currentItem != null)
         {
             currentItem.transform.SetParent(handPosition);
-
-            currentItem.transform.localPosition = Vector3.zero; 
+            currentItem.transform.localPosition = Vector3.zero;
             currentItem.transform.localRotation = Quaternion.identity;
-
-
+            currentItem.gameObject.SetActive(true);
         }
-    }
 
-    public void UpdateInventoryImage()
-    {
-        if (currentItem != null)
+        if (currentPlate != null)
         {
-            switch (currentItem.itemState)
-            {
-                case ItemState.Raw:
-                    inventoryImage.sprite = currentItem.itemIcon;
-                    break;
-                case ItemState.Cut:
-                    inventoryImage.sprite = currentItem.cutIcon;
-                    break;
-                case ItemState.Cooked:
-                    inventoryImage.sprite = currentItem.cookedIcon;
-                    break;
-            }
-        }
-        else
-        {
-            inventoryImage.sprite = null;
+            currentPlate.transform.SetParent(handPosition);
+            currentPlate.transform.localPosition = Vector3.zero;
+            currentPlate.transform.localRotation = Quaternion.identity;
+            currentPlate.gameObject.SetActive(true);
         }
     }
 }
