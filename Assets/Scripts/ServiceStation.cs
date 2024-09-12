@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class ServiceStation : Station
 {
-    public Item ingredient;
-    public bool IngredientDisponible = false;
-
     public Transform stoveTablePosition;
     public float itemHeightAboveTable = 1.5f;
 
@@ -14,25 +11,29 @@ public class ServiceStation : Station
     {
         if (PlayerInventory.Instance.currentItem != null && PlayerInventory.Instance.currentItem.itemState == ItemState.Cooked)
         {
-            if (IngredientDisponible == false)
+            // Obtener el Item actual
+            Item deliveredItem = PlayerInventory.Instance.currentItem;
+            string deliveredItemName = deliveredItem.itemName;
+
+            // Verificar si el item entregado coincide con algún pedido
+            bool pedidoEntregado = Orders.Instance.VerificarYEliminarPedido(deliveredItemName);
+
+            if (pedidoEntregado)
             {
-                ingredient = PlayerInventory.Instance.currentItem; 
-
-                PositionOnTable();
-
-                IngredientDisponible = true;
+                Debug.Log("Pedido entregado correctamente: " + deliveredItemName);
+                PositionOnTable(deliveredItem);
                 PlayerInventory.Instance.RemoveItem();
-
-                Destroy(ingredient.gameObject);
-
+                StartCoroutine(enumerator());
+                Destroy(deliveredItem.gameObject);
             }
-            IngredientDisponible = false;
-
-             
+            else
+            {
+                Debug.Log("El item no coincide con ningún pedido.");
+            }
         }
         else
         {
-            Debug.Log("No item to deliver or item is not cooked.");
+            Debug.Log("No hay item para entregar o el item no está cocinado.");
         }
     }
 
@@ -41,13 +42,10 @@ public class ServiceStation : Station
         yield return new WaitForSeconds(3);
     }
 
-    private void PositionOnTable()
+    private void PositionOnTable(Item ingredient)
     {
-
         Vector3 itemPosition = stoveTablePosition.position;
         itemPosition.y += itemHeightAboveTable;
-        ingredient.transform.position = itemPosition; 
-
-
+        ingredient.transform.position = itemPosition;
     }
 }

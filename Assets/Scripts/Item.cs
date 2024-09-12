@@ -20,41 +20,59 @@ public class Item : MonoBehaviour
     public GameObject cookedModel;
 
     // Estado actual del ítem
-    public ItemState itemState;
+    public ItemState itemState = ItemState.Raw; // Estado inicial configurado a Raw
 
     // Prefab del ícono en el mundo
     public GameObject worldIconPrefab;
 
-    // Instancia del ícono en el mundo
-    private GameObject worldIconInstance;
+    // Lista de instancias de íconos en el mundo
+    private List<GameObject> worldIconInstances = new List<GameObject>();
 
     public Camera mainCamera;
 
     private void Start()
     {
-        CreateWorldIcon();
         mainCamera = Camera.main;
         UpdateModel();
+        UpdateWorldIcon(); // Asegurarse de actualizar el ícono al inicio
     }
 
     public void Update()
     {
-        if (worldIconInstance != null)
+        foreach (var iconInstance in worldIconInstances)
         {
-            worldIconInstance.transform.LookAt(mainCamera.transform);
+            if (iconInstance != null)
+            {
+                iconInstance.transform.LookAt(mainCamera.transform);
+            }
         }
-        UpdateWorldIcon();
     }
 
     // Crear el ícono sobre el ítem
-    private void CreateWorldIcon()
+    private void CreateWorldIcon(Sprite iconSprite)
     {
-        if (worldIconPrefab != null && worldIconInstance == null)
+        if (worldIconPrefab != null)
         {
-            worldIconInstance = Instantiate(worldIconPrefab, transform.position + Vector3.up, Quaternion.identity);
-            worldIconInstance.transform.SetParent(transform);
-            UpdateWorldIcon();
-            UpdateModel();
+            // Calcular la posición del nuevo ícono
+            Vector3 iconPosition = transform.position + Vector3.up + Vector3.right * worldIconInstances.Count;
+
+            GameObject newIconInstance = Instantiate(worldIconPrefab, iconPosition, Quaternion.identity);
+            newIconInstance.transform.SetParent(transform);
+            Image iconImage = newIconInstance.GetComponentInChildren<Image>();
+            if (iconImage != null)
+            {
+                iconImage.sprite = iconSprite;
+                Debug.Log("Sprite asignado: " + iconSprite.name);
+            }
+            else
+            {
+                Debug.LogError("No se encontró el componente Image en el prefab del ícono.");
+            }
+            worldIconInstances.Add(newIconInstance);
+        }
+        else
+        {
+            Debug.LogError("worldIconPrefab no está asignado.");
         }
     }
 
@@ -70,34 +88,30 @@ public class Item : MonoBehaviour
         }
     }
 
-    public void UpdateWorldIcon()
-    {
-        if (worldIconInstance != null)
-        {
-            // Obtener la referencia a la imagen del ícono en el prefab
-            Image iconImage = worldIconInstance.GetComponentInChildren<Image>();
-
-            // Cambiar el sprite de acuerdo al estado del ítem
-            switch (itemState)
-            {
-                case ItemState.Raw:
-                    iconImage.sprite = itemIcon;
-                    break;
-                case ItemState.Cut:
-                    iconImage.sprite = cutIcon;
-                    break;
-                case ItemState.Cooked:
-                    iconImage.sprite = cookedIcon;
-                    break;
-            }
-        }
-    }
-
     public void ChangeState(ItemState newState)
     {
         itemState = newState;    // Cambiar el estado
-      //  UpdateWorldIcon();
-           UpdateModel();
+        UpdateModel();
+        UpdateWorldIcon();
+    }
+
+    private void UpdateWorldIcon()
+    {
+        switch (itemState)
+        {
+            case ItemState.Raw:
+                Debug.Log("Cambiando estado a Raw");
+                CreateWorldIcon(itemIcon);
+                break;
+            case ItemState.Cut:
+                Debug.Log("Cambiando estado a Cut");
+                CreateWorldIcon(cutIcon);
+                break;
+            case ItemState.Cooked:
+                Debug.Log("Cambiando estado a Cooked");
+                CreateWorldIcon(cookedIcon);
+                break;
+        }
     }
 
     private void UpdateModel()
@@ -121,12 +135,15 @@ public class Item : MonoBehaviour
         }
     }
 
-    //Destruir el icono del mundo al destruir el ítem
+    // Destruir todos los íconos del mundo al destruir el ítem
     private void OnDestroy()
     {
-        if (worldIconInstance != null)
+        foreach (var iconInstance in worldIconInstances)
         {
-            Destroy(worldIconInstance);
+            if (iconInstance != null)
+            {
+                Destroy(iconInstance);
+            }
         }
     }
 }

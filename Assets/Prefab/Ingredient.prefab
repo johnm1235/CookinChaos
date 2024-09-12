@@ -336,7 +336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6789426780934662978
 Transform:
   m_ObjectHideFlags: 0
@@ -346,7 +346,7 @@ Transform:
   m_GameObject: {fileID: 9109582506364182627}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.25, y: 15.23, z: 0.98}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62dda44bd4c57c548a78a22c10bf6fda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemName: Pera
+  itemName: Hamburguesa
   itemIcon: {fileID: 21300000, guid: f14e7beb7d1e12d438eedf03be879c82, type: 3}
   cutIcon: {fileID: 21300000, guid: 0a288fa514aa403429820b26814ee78c, type: 3}
   cookedIcon: {fileID: 21300000, guid: 5bb247fbe07517f43adf0bbf7864180c, type: 3}
@@ -446,5 +446,5 @@ MonoBehaviour:
   cutModel: {fileID: 8471276065114660158}
   cookedModel: {fileID: 468269446234889075}
   itemState: 0
-  worldIconPrefab: {fileID: 0}
+  worldIconPrefab: {fileID: 832575426257498168, guid: 7f72a69a49001054fa3d9ef409400ccd, type: 3}
   mainCamera: {fileID: 0}
