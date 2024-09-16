@@ -5,11 +5,17 @@ using UnityEngine.UI;
 
 public class MixingStation : Station
 {
-    public List<Item> itemsInBowl = new List<Item>(); 
-    public Transform bowlPosition;                   
-    public GameObject ingredientsCanvasPrefab;       
-    private GameObject ingredientsCanvasInstance;                   
+    public List<Item> itemsInBowl = new List<Item>();
+    public Transform bowlPosition;
+    public GameObject ingredientsCanvasPrefab;
+    private GameObject ingredientsCanvasInstance;
 
+    public GameObject foodItemPrefab;
+
+    public Transform tablePosition;
+    public float itemHeightAboveTable = 1.5f;
+
+    private const int maxIngredients = 6; // Máximo de ingredientes permitidos
 
     protected override void InteractWithStation()
     {
@@ -20,8 +26,8 @@ public class MixingStation : Station
             // Comprobar si el ingrediente es mezclable
             if (currentItem.itemState == ItemState.Cut || currentItem.itemState == ItemState.Cooked)
             {
-                AddItemToBowl(currentItem);  
-                PlayerInventory.Instance.RemoveItem();  
+                AddItemToBowl(currentItem);
+                PlayerInventory.Instance.RemoveItem();
             }
             else
             {
@@ -35,43 +41,167 @@ public class MixingStation : Station
         }
     }
 
-
     private void AddItemToBowl(Item item)
     {
-        itemsInBowl.Add(item);  
-        PositionItemInBowl(item); 
-    }
-
-    // Posicionar el ítem en la estación de mezcla
-    private void PositionItemInBowl(Item item)
-    {
-        item.transform.position = bowlPosition.position;
-        item.transform.SetParent(bowlPosition);  // El bowl como padre del ingrediente
-        item.gameObject.SetActive(true);
-    }
-
-    // Lógica para recoger los ítems mezclados
-    private void CollectMixedItem()
-    {
-        Item mixedItem = CreateMixedItem();
-        PlayerInventory.Instance.PickUpItem(mixedItem);  
-        itemsInBowl.Clear(); 
-        Destroy(ingredientsCanvasInstance);  
-    }
-
-    // Lógica para mezclar ingredientes
-    private Item CreateMixedItem()
-    {
-        bool hasTomato = itemsInBowl.Exists(item => item.itemName == "Tomato");
-        bool hasLettuce = itemsInBowl.Exists(item => item.itemName == "Lettuce");
-
-        if (hasTomato && hasLettuce)
+        // Verificar si el número de ingredientes en el bowl ha alcanzado el máximo permitido
+        if (itemsInBowl.Count >= maxIngredients)
         {
-            // Crear una ensalada si hay tomate y lechuga
-            // Item mixedSalad = Instantiate(mixedSaladPrefab);
-            // return mixedSalad;
+            Debug.Log("No se pueden agregar más de 6 ingredientes.");
+            return;
         }
 
-        return itemsInBowl[0];  // Devolver el primer ítem si no hay combinación específica
+        itemsInBowl.Add(item);
+        PositionOnTable(item); // Usar PositionOnTable en lugar de PositionItemInBowl
+
+        // Verificar si hay más de un ítem en el bol
+        if (itemsInBowl.Count > 1)
+        {
+            CreateMixedItem();
+        }
+    }
+
+    // Posicionar el ítem en la mesa
+    private void PositionOnTable(Item ingredient)
+    {
+        Vector3 itemPosition = tablePosition.position;
+        itemPosition.y += itemHeightAboveTable;
+        ingredient.transform.position = itemPosition;
+        ingredient.gameObject.SetActive(true);
+    }
+
+    private Item CreateMixedItem()
+    {
+        // Verificar si ya existe un ítem mezclado en el bowl
+        Item mixedItem = itemsInBowl.Find(i => i.itemName == "MixedItem");
+
+        GameObject newCanvasInstance = null;
+        Image[] ingredientIcons = null;
+
+        if (mixedItem == null)
+        {
+            // Si no hay ítem mezclado, crear uno nuevo
+            GameObject newItemObject = Instantiate(foodItemPrefab, bowlPosition.position, Quaternion.identity);
+            mixedItem = newItemObject.GetComponent<Item>();
+            mixedItem.itemName = "MixedItem";
+
+            // Crear un nuevo canvas de ingredientes
+            newCanvasInstance = Instantiate(ingredientsCanvasPrefab, mixedItem.transform.position, Quaternion.identity);
+            newCanvasInstance.transform.SetParent(mixedItem.transform);
+
+            // Ajustar la posición del canvas
+            RectTransform canvasRectTransform = newCanvasInstance.GetComponent<RectTransform>();
+            canvasRectTransform.anchoredPosition = new Vector2(0, 1); // Ajusta según sea necesario
+
+            newCanvasInstance.AddComponent<LookAtCamera>();
+
+            // Obtener las imágenes dentro del nuevo Canvas
+            ingredientIcons = newCanvasInstance.GetComponentsInChildren<Image>();
+        }
+        else
+        {
+            // Obtener el canvas existente en el ítem mezclado
+            Canvas mixedItemCanvas = mixedItem.GetComponentInChildren<Canvas>();
+            ingredientIcons = mixedItemCanvas.GetComponentsInChildren<Image>();
+
+            // Verificar si el canvas ya tiene íconos ocupados
+            newCanvasInstance = mixedItemCanvas.gameObject;
+
+            if (newCanvasInstance.GetComponent<LookAtCamera>() == null)
+            {
+                newCanvasInstance.AddComponent<LookAtCamera>();
+            }
+        }
+
+        // Desactivar visualmente solo los slots vacíos (sin desactivar el GameObject)
+        foreach (Image icon in ingredientIcons)
+        {
+            if (icon.sprite == null)
+            {
+                icon.enabled = false; // Desactivar visualmente los slots vacíos, pero no el GameObject
+            }
+        }
+
+        // Determinar el índice inicial basado en íconos ya ocupados
+        int index = 0;
+        foreach (Image icon in ingredientIcons)
+        {
+            if (icon.sprite != null)
+            {
+                icon.enabled = true;  // Asegurarse de que los íconos ya asignados estén visibles
+                index++; // Aumentar el índice si el slot ya está ocupado
+            }
+        }
+
+        // Guardar los íconos de los ingredientes mezclados
+        bool hasTomato = false;
+        bool hasLettuce = false;
+        bool hasCheese = false;
+        bool hasBread = false;
+
+        foreach (Item item in itemsInBowl)
+        {
+            if (item.itemName == "MixedItem") continue;  // Ignorar el ítem mezclado en el bowl
+
+            if (item.itemName == "Tomato") hasTomato = true;
+            if (item.itemName == "Lettuce") hasLettuce = true;
+            if (item.itemName == "Cheese") hasCheese = true;
+            if (item.itemName == "Bread") hasBread = true;
+
+            // Obtener el canvas del ingrediente
+            Canvas ingredientCanvas = item.GetComponentInChildren<Canvas>();
+            if (ingredientCanvas != null)
+            {
+                // Obtener la imagen del canvas del ingrediente
+                Image ingredientImage = ingredientCanvas.GetComponentInChildren<Image>();
+                if (ingredientImage != null && index < ingredientIcons.Length)
+                {
+                    // Activar el ícono cuando se asigna el sprite
+                    ingredientIcons[index].sprite = ingredientImage.sprite;
+                    ingredientIcons[index].enabled = true; // Asegurarse de que el slot esté visible
+                    index++;
+                }
+            }
+
+            // Destruir el ingrediente una vez añadido
+            Destroy(item.gameObject);
+        }
+
+        // Verificar combinaciones de ingredientes
+        if (hasTomato && hasLettuce)
+        {
+            mixedItem.itemName = "Salad";
+        }
+        else if (hasTomato && hasCheese)
+        {
+            mixedItem.itemName = "TomatoCheese";
+        }
+        else if (hasBread && hasCheese)
+        {
+            mixedItem.itemName = "CheeseSandwich";
+        }
+        else if (hasTomato && hasLettuce && hasCheese)
+        {
+            mixedItem.itemName = "DeluxeSalad";
+        }
+        // Agrega más combinaciones según sea necesario
+
+        // Limpiar el bowl excepto el ítem mezclado
+        itemsInBowl.Clear();
+        itemsInBowl.Add(mixedItem);
+
+        // Posicionar el ítem mezclado en la mesa
+        PositionOnTable(mixedItem);
+
+        return mixedItem;
+    }
+
+    private void CollectMixedItem()
+    {
+        if (itemsInBowl.Count == 1 && (itemsInBowl[0].itemName == "MixedItem" || itemsInBowl[0].itemName == "Salad" || itemsInBowl[0].itemName == "TomatoCheese" || itemsInBowl[0].itemName == "CheeseSandwich" || itemsInBowl[0].itemName == "DeluxeSalad"))
+        {
+            Item mixedItem = itemsInBowl[0];
+            itemsInBowl.Clear();
+            PlayerInventory.Instance.PickUpItem(mixedItem);
+        }
     }
 }

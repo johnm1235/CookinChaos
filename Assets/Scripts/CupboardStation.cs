@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CupboardStation : Station
 {
-    //Posición de la mesa de la estufa
-    public Transform stoveTablePosition;
+    //Posición de la mesa 
+    public Transform tablePosition;
     public float itemHeightAboveTable = 1.5f;
 
     //Item a cocinar
@@ -46,10 +46,9 @@ public class CupboardStation : Station
 
     private void PositionOnTable()
     {
-        Vector3 itemPosition = stoveTablePosition.position;
+        Vector3 itemPosition = tablePosition.position;
         itemPosition.y += itemHeightAboveTable;
         ingredient.transform.position = itemPosition; 
         ingredient.gameObject.SetActive(true); 
-
     }
 }

@@ -8,7 +8,7 @@ public class PlayerInventory : MonoBehaviour
     public static PlayerInventory Instance;
     public Item currentItem;
     public Plate currentPlate; // Referencia al plato que tiene el jugador, si tiene uno.
-  //  public Image inventoryImage;
+                                   //  public Image inventoryImage;
     public Transform handPosition;
 
     private void Awake()
@@ -42,7 +42,7 @@ public class PlayerInventory : MonoBehaviour
         {
             currentItem.transform.SetParent(null);
             currentItem = null;
-        //    inventoryImage.sprite = null;
+            //    inventoryImage.sprite = null;
         }
         if (currentPlate != null)
         {
@@ -50,7 +50,6 @@ public class PlayerInventory : MonoBehaviour
             currentPlate = null;
         }
     }
-
 
     public bool HasPlate()
     {
@@ -74,5 +73,6 @@ public class PlayerInventory : MonoBehaviour
             currentPlate.transform.localRotation = Quaternion.identity;
             currentPlate.gameObject.SetActive(true);
         }
+
     }
 }

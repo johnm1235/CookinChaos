@@ -17,8 +17,9 @@ public class Orders : MonoBehaviour
 
     public List<GameObject> pedidosActivos = new List<GameObject>(); // Lista pública de pedidos activos
 
-    private float espacioEntrePedidos = 100f; // Espacio entre pedidos en el eje X
+    private float espacioEntrePedidos = 200f; // Espacio entre pedidos en el eje X
     private bool esperaParaGenerar = false; // Flag para esperar antes de generar nuevos pedidos
+    private bool puedeGenerarPedidos = false; // Variable para controlar si se pueden generar pedidos
 
     private void Awake()
     {
@@ -30,7 +31,6 @@ public class Orders : MonoBehaviour
 
     void Start()
     {
-        CrearPedido(new Vector2(0, 0)); // Crear el primer pedido en la posición inicial
         StartCoroutine(GestionarPedidos());
     }
 
@@ -94,7 +94,7 @@ public class Orders : MonoBehaviour
     {
         while (true)
         {
-            if (pedidosActivos.Count < numeroTotalPedidos && !esperaParaGenerar)
+            if (puedeGenerarPedidos && pedidosActivos.Count < numeroTotalPedidos && !esperaParaGenerar)
             {
                 StartCoroutine(EsperarYGenerarPedido());
                 esperaParaGenerar = true;
@@ -134,6 +134,7 @@ public class Orders : MonoBehaviour
                     if (pedidoScript != null)
                     {
                         pedidoScript.expirado = true; // Marcar el pedido como expirado
+                        ScoreManager.Instance.RestarPuntos(10); // Restar puntos por no completar el pedido
                     }
 
                     yield return new WaitForSeconds(2f); // Esperar 2 segundos antes de eliminar
@@ -191,6 +192,15 @@ public class Orders : MonoBehaviour
         if (pedidoScript != null)
         {
             pedidoScript.completado = true; // Marcar el pedido como completado
+
+            // Calcular puntos basados en el tiempo restante
+            Slider barraTiempo = pedido.GetComponentInChildren<Slider>();
+            if (barraTiempo != null)
+            {
+                float tiempoRestante = barraTiempo.value * tiempoMaximoPorPedido;
+                int puntos = Mathf.CeilToInt(tiempoRestante * 5); // Ejemplo: 10 puntos por segundo restante
+                ScoreManager.Instance.AgregarPuntos(puntos);
+            }
         }
 
         RawImage checkImage = pedido.transform.Find("CheckImage").GetComponent<RawImage>();
@@ -205,6 +215,20 @@ public class Orders : MonoBehaviour
         {
             EliminarPedido(pedido); // Eliminar el pedido después de mostrar el "check"
         }
+    }
+
+    // Método para habilitar la generación de pedidos
+    public void HabilitarGeneracionPedidos()
+    {
+        puedeGenerarPedidos = true;
+        CrearPedido(new Vector2(0, 0)); // Crear el primer pedido en la posición inicial
+    }
+
+    // Método para deshabilitar la generación de pedidos
+    public void DeshabilitarGeneracionPedidos()
+    {
+        puedeGenerarPedidos = false;
+        StopAllCoroutines(); // Detener todas las corrutinas relacionadas con la generación de pedidos
     }
 
 }

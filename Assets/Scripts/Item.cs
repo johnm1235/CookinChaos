@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ItemState { Raw, Cut, Cooked }
+public enum ItemState { Raw, Cut, Cooked, Mix }
 
 public class Item : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class Item : MonoBehaviour
     public Sprite itemIcon;
     public Sprite cutIcon;
     public Sprite cookedIcon;
+
 
     // Modelos 3D para los diferentes estados
     public GameObject rawModel;
@@ -34,8 +35,9 @@ public class Item : MonoBehaviour
     {
         mainCamera = Camera.main;
         UpdateModel();
-        UpdateWorldIcon(); // Asegurarse de actualizar el ícono al inicio
+        //UpdateWorldIcon(); // Esta línea se comenta, no queremos que el ícono se actualice automáticamente al inicio
     }
+
 
     public void Update()
     {
@@ -91,12 +93,24 @@ public class Item : MonoBehaviour
     public void ChangeState(ItemState newState)
     {
         itemState = newState;    // Cambiar el estado
+     
         UpdateModel();
-        UpdateWorldIcon();
+        //UpdateWorldIcon();
     }
-
+    
     private void UpdateWorldIcon()
     {
+        // Limpiar íconos anteriores
+        foreach (var iconInstance in worldIconInstances)
+        {
+            if (iconInstance != null)
+            {
+                Destroy(iconInstance);
+            }
+        }
+        worldIconInstances.Clear();
+
+        // Crear nuevo ícono basado en el estado actual
         switch (itemState)
         {
             case ItemState.Raw:
@@ -134,6 +148,12 @@ public class Item : MonoBehaviour
                 break;
         }
     }
+
+    public void CreateWorldIconBasedOnState()
+    {
+        UpdateWorldIcon(); // Llama a la función que ya tienes implementada
+    }
+
 
     // Destruir todos los íconos del mundo al destruir el ítem
     private void OnDestroy()
