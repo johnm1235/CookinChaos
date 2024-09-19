@@ -8,7 +8,7 @@ public class CuttingStation : Station
     private Item cuttingItem;
 
     //Cutting
-    private bool isCutting = false;
+    public bool isCutting = false;
     public float cuttingTime = 3f;
     private float currentCuttingTime = 0f;
 

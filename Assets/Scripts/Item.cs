@@ -95,7 +95,7 @@ public class Item : MonoBehaviour
         itemState = newState;    // Cambiar el estado
      
         UpdateModel();
-        //UpdateWorldIcon();
+       // UpdateWorldIcon();
     }
     
     private void UpdateWorldIcon()

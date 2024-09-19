@@ -31,8 +31,8 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        float move = Input.GetAxis("Vertical");
-        float strafe = Input.GetAxis("Horizontal");
+        float move = Input.GetAxisRaw("Vertical");
+        float strafe = Input.GetAxisRaw("Horizontal");
 
         Vector3 direction = new Vector3(strafe, 0f, move).normalized;
 

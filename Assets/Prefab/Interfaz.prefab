@@ -695,7 +695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7daaca1744af67a418e4f8716dd3697c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comidaRequerida: Hamburguesa
-  comidaPrefab: {fileID: 9109582506364182627, guid: ec6bac244a6062642b425c696b9464be, type: 3}
+  comidaRequerida: Salad
+  comidaPrefab: {fileID: 0}
   completado: 0
   expirado: 0
