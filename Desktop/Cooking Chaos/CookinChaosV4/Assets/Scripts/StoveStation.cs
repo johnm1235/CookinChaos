@@ -18,18 +18,29 @@ public class StoveStation : Station
     //ProgressBar
     public Slider cookingProgressBar;
 
-    // Posición de la mesadonde se mostrará el alimento.
+    // Posición de la mesa donde se mostrará el alimento.
     public Transform stoveTablePosition;
     public float itemHeightAboveTable = 1.5f;
 
+    public FloatingStation floatingStation;
+
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip cookingSound;
+
+
+
     protected override void InteractWithStation()
     {
+        
         // Verificar si el jugador tiene un ítem cortado para cocinar
         if (PlayerInventory.Instance.currentItem != null && PlayerInventory.Instance.currentItem.itemState == ItemState.Cut)
         {
+            
             if (!isCooking && IngredientDisponible == false)
             {
                 cookingItem = PlayerInventory.Instance.currentItem;
+                cookingItem.transform.SetParent(stoveTablePosition);
+
                 PositionOnTable();
                 IngredientDisponible = true;
                 StartCoroutine(CookFood());
@@ -40,7 +51,6 @@ public class StoveStation : Station
         else if (cookingItem != null && cookingItem.itemState == ItemState.Cooked && PlayerInventory.Instance.HasPlate() && Input.GetKeyDown(KeyCode.Space))
         {
             PlayerInventory.Instance.PickUpItem(cookingItem);
-       //     PlayerInventory.Instance.RemovePlate(); // El jugador ya no tiene el plato después de agarrar la comida.
             cookingItem = null;
             IngredientDisponible = false;
         }
@@ -48,11 +58,13 @@ public class StoveStation : Station
         {
             Debug.Log("No item to cook or item is not cut.");
         }
-    
-}
+    }
 
     private IEnumerator CookFood()
     {
+        audioSource.PlayOneShot(cookingSound);
+        if (floatingStation)
+        floatingStation.isCooking = true;
         isCooking = true;
         currentCookingTime = 0f;
         cookingProgressBar.gameObject.SetActive(true);
@@ -62,36 +74,42 @@ public class StoveStation : Station
         {
             currentCookingTime += Time.deltaTime;
             cookingProgressBar.value = currentCookingTime / cookingTime;
-            yield return null; 
+            yield return null;
         }
 
         CompleteCooking();
+        audioSource.Stop();
     }
 
     private void CompleteCooking()
     {
+        if (floatingStation)
+            floatingStation.isCooking = false;
         isCooking = false;
 
-        // Cambiar el estado del ítem a cocinndo
+        // Cambiar el estado del ítem a cocinado
         cookingItem.ChangeState(ItemState.Cooked);
 
         Vector3 itemPosition = stoveTablePosition.position;
         itemPosition.y += itemHeightAboveTable;
         cookingItem.transform.position = itemPosition;
 
+        // Establecer la comida como hija de la estación
+        cookingItem.transform.SetParent(stoveTablePosition);
+
         cookingItem.gameObject.SetActive(true);
         cookingProgressBar.gameObject.SetActive(false);
-       // PlayerInventory.Instance.inventoryImage.sprite = cookingItem.cookedIcon;
+
         Debug.Log("Cooking complete and placed on Stove Station.");
     }
-
 
     private void PositionOnTable()
     {
         Vector3 itemPosition = stoveTablePosition.position;
         itemPosition.y += itemHeightAboveTable;
         cookingItem.transform.position = itemPosition;
-        cookingItem.transform.SetParent(stoveTablePosition);  // Asegura que el ítem quede en la mesa.
-    }
 
+        // Establecer la comida como hija de la estación cuando se coloca en la mesa
+      //  cookingItem.transform.SetParent(stoveTablePosition);
+    }
 }

@@ -19,10 +19,16 @@ public class Timer : MonoBehaviour
     private float tiempoRestante;
     private bool juegoEnCurso = false;
 
+    public AudioSource audioSource;
+    public AudioClip audioClipEndGame;
+
     private void Start()
     {
         mensajeFinText.gameObject.SetActive(false);
         StartCoroutine(ContadorPreparacion());
+
+        //Inicializar el audio source
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -79,6 +85,8 @@ public class Timer : MonoBehaviour
         juegoEnCurso = false;
         mensajeFinText.gameObject.SetActive(true);
         mensajeFinText.text = "¡TIEMPO!";
+
+       // audioSource.PlayOneShot(audioClipEndGame);
 
         // Deshabilitar el movimiento del jugador
         PlayerController playerController = FindObjectOfType<PlayerController>();

@@ -7,6 +7,9 @@ public class ServiceStation : Station
     public Transform stoveTablePosition;
     public float itemHeightAboveTable = 1.5f;
 
+    // Referencia a DirtyPlatesStation
+    public DirtyPlatesStation dirtyPlatesStation;
+
     protected override void InteractWithStation()
     {
         if (PlayerInventory.Instance.currentItem != null && PlayerInventory.Instance.currentItem.itemState == ItemState.Cooked)
@@ -23,8 +26,19 @@ public class ServiceStation : Station
                 Debug.Log("Pedido entregado correctamente: " + deliveredItemName);
                 PositionOnTable(deliveredItem);
                 PlayerInventory.Instance.RemoveItem();
+                PlayerInventory.Instance.RemovePlate();
                 StartCoroutine(enumerator());
                 Destroy(deliveredItem.gameObject);
+
+                // Llamar al método GenerateDirtyPlate de DirtyPlatesStation
+                if (dirtyPlatesStation != null)
+                {
+                    dirtyPlatesStation.GenerateDirtyPlate();
+                }
+                else
+                {
+                    Debug.LogWarning("DirtyPlatesStation reference is not set.");
+                }
             }
             else
             {

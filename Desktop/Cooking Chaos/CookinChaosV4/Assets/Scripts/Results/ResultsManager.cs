@@ -39,4 +39,13 @@ public class ResultsManager : MonoBehaviour
         // Destruir el objeto ScoreManager para reiniciar el puntaje
         Destroy(ScoreManager.Instance.gameObject);
     }
+
+    public void NextLevel()
+    {
+        // Reiniciar el puntaje
+        ScoreManager.Instance.ReiniciarPuntaje();
+
+        // Asume que el nombre de la escena del siguiente nivel es "Nivel2"
+        SceneManager.LoadScene("Level2");
+    }
 }

@@ -14,7 +14,7 @@ public abstract class Station : MonoBehaviour
     private void Start()
     {
         originalColor = this.GetComponent<Renderer>().material.color;
-        interactText.gameObject.SetActive(false); 
+     //   interactText.gameObject.SetActive(false); 
     }
 
     protected void Update()
@@ -73,12 +73,12 @@ public abstract class Station : MonoBehaviour
 
     private void ShowInteractText()
     {
-        interactText.text = "[ Space ]";  // Cambiar el texto según sea necesario
-        interactText.gameObject.SetActive(true);  // Activar el texto
+       // interactText.text = "[ Space ]";  // Cambiar el texto según sea necesario
+      //  interactText.gameObject.SetActive(true);  // Activar el texto
     }
 
     private void HideInteractText()
     {
-        interactText.gameObject.SetActive(false);  // Ocultar el texto
+      //  interactText.gameObject.SetActive(false);  // Ocultar el texto
     }
 }

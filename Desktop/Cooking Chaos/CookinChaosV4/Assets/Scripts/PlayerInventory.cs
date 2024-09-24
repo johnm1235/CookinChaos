@@ -44,16 +44,25 @@ public class PlayerInventory : MonoBehaviour
             currentItem = null;
             //    inventoryImage.sprite = null;
         }
+    }
+
+    public void RemovePlate()
+    {
         if (currentPlate != null)
         {
             currentPlate.RemovePlate();
             currentPlate = null;
         }
     }
-
     public bool HasPlate()
     {
-        return currentPlate != null && currentPlate.hasPlate;
+        return currentPlate != null && currentPlate.hasPlate && currentPlate.isClean;
+    }
+
+
+    public bool HasDirtyPlate()
+    {
+        return currentPlate != null && currentPlate.hasPlate && currentPlate.isClean == false;
     }
 
     private void PositionInHand()

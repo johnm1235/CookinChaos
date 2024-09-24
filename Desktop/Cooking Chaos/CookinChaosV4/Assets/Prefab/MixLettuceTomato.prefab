@@ -124,7 +124,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7554494243086256374
 Transform:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ MonoBehaviour:
   rawModel: {fileID: 8925031015728954863}
   cutModel: {fileID: 8925031015728954863}
   cookedModel: {fileID: 8925031015728954863}
-  itemState: 2
+  itemState: 1
   worldIconPrefab: {fileID: 0}
   mainCamera: {fileID: 0}
 --- !u!1 &7290738412169318758

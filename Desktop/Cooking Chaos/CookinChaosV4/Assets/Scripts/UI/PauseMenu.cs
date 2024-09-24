@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject optionsMenu;
+
+    public VideoPlayer videoPlayer;
     public void BackToMenu()
     {
         // Cargar la escena del menú principal
@@ -17,6 +20,7 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(false);
         // Ocultar el menú de opciones
         optionsMenu.SetActive(false);
+        videoPlayer.gameObject.SetActive(false);
     }
 
     public void Update()
@@ -36,11 +40,26 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    public void Tutorial()
+    {
+        // Mostrar tutorial
+        videoPlayer.gameObject.SetActive(true);
+        videoPlayer.Play();
+    }
+
+    public void CloseTutorial()
+    {
+        // Cerrar tutorial
+        videoPlayer.Stop();
+        videoPlayer.gameObject.SetActive(false);
+    }
+
     public void PauseGame()
     {
         // Pausar el juego
         Time.timeScale = 0;
         pauseMenu.SetActive(true);
+        optionsMenu.SetActive(true);
 
     }
 
@@ -49,6 +68,6 @@ public class PauseMenu : MonoBehaviour
         // Reanudar el juego
         Time.timeScale = 1;
         pauseMenu.SetActive(false);
+        optionsMenu.SetActive(false);
     }
-
 }

@@ -23,6 +23,10 @@ public class CuttingStation : Station
     // Distancia máxima para interactuar con la estación
     public float interactionDistance = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip cuttingSound;
+
     protected override void InteractWithStation()
     {
         // Verificar si el jugador está cerca de la estación
@@ -62,6 +66,7 @@ public class CuttingStation : Station
 
     private IEnumerator CutFood()
     {
+        audioSource.PlayOneShot(cuttingSound);
         isCutting = true;
         currentCuttingTime = 0f; // Reiniciar el tiempo de corte
         sliderCut.gameObject.SetActive(true);
@@ -85,6 +90,8 @@ public class CuttingStation : Station
         sliderCut.gameObject.SetActive(false);
 
         Debug.Log("Item cut and placed on Cutting Station.");
+
+        audioSource.Stop();
     }
 
     private void PositionOnTable()

@@ -208,11 +208,19 @@ public class MixingStation : Station
 
     private void CollectMixedItem()
     {
-        if (itemsInBowl.Count == 1 && (itemsInBowl[0].itemName == "MixedItem" || itemsInBowl[0].itemName == "Salad" || itemsInBowl[0].itemName == "TomatoCheese" || itemsInBowl[0].itemName == "CheeseSalad" || itemsInBowl[0].itemName == "DeluxeSalad"))
+        if (PlayerInventory.Instance.HasPlate() )
         {
-            Item mixedItem = itemsInBowl[0];
-            itemsInBowl.Clear();
-            PlayerInventory.Instance.PickUpItem(mixedItem);
+            if (itemsInBowl.Count == 1 && (itemsInBowl[0].itemName == "MixedItem" || itemsInBowl[0].itemName == "Salad" || itemsInBowl[0].itemName == "TomatoCheese" || itemsInBowl[0].itemName == "CheeseSalad" || itemsInBowl[0].itemName == "DeluxeSalad"))
+            {
+                Item mixedItem = itemsInBowl[0];
+                itemsInBowl.Clear();
+                PlayerInventory.Instance.PickUpItem(mixedItem);
+            }
+
+        }
+        else
+        {
+            Debug.Log("No hay plato para recoger el ítem mezclado.");
         }
     }
 }
