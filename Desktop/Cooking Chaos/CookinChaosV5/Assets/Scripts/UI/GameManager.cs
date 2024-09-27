@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
-        EditorApplication.isPlaying = false;
+       // EditorApplication.isPlaying = false;
     }
 
     public void LoadLevel(string levelName)

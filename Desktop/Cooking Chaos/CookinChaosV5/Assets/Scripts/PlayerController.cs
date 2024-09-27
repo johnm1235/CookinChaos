@@ -14,11 +14,13 @@ public class PlayerController : MonoBehaviour
 
     private float rotationSpeed;
 
+    public Animator anim;
 
     public void Start()
     {
         player = GameObject.Find("Player");
         controller = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
     }
 
     public void Update()
@@ -57,6 +59,8 @@ public class PlayerController : MonoBehaviour
             controller.Move(moveDirection * Time.deltaTime);
         }
 
+        // Actualizar el parámetro de velocidad en el Animator
+        anim.SetFloat("Speed", direction.magnitude * speed);
     }
 
     // Método para habilitar el movimiento del jugador
@@ -69,5 +73,4 @@ public class PlayerController : MonoBehaviour
     {
         puedeMoverse = false;
     }
-        // Verificación de si el personaje está en el suelo
- }
+}
